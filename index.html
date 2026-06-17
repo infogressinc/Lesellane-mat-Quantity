@@ -143,6 +143,7 @@ button:hover {
   border-radius: 10px;
   line-height: 1.7;
   font-size: 13px;
+  margin-top: 8px;
 }
 
 .detail-box.active {
@@ -181,10 +182,6 @@ button:hover {
     grid-template-columns: 1fr;
   }
 
-  .result-table {
-    font-size: 12px;
-  }
-
   .result-table th,
   .result-table td {
     padding: 9px 6px;
@@ -197,9 +194,10 @@ button:hover {
 <body>
 <div class="wrap">
   <h1>르셀란 예상장수 계산기</h1>
+
   <div class="desc">
     가로·세로 실측 치수를 입력하면 750size / 1200size / 1300size 기준 예상장수를 자동 산출합니다.<br>
-    여러 공간을 함께 입력하면 전체 시공면적 기준으로 로스율을 반영해 최종 예상장수를 계산합니다.
+    여러 공간을 함께 입력하면 전체 시공면적 기준으로 최종 예상장수를 계산합니다.
   </div>
 
   <div class="section-title">시공 공간 입력</div>
@@ -242,21 +240,19 @@ button:hover {
         <th>사이즈</th>
         <th>전체 시공면적</th>
         <th>단순 면적기준 장수</th>
-        <th>로스율</th>
         <th>최종 예상장수</th>
         <th>공간별 산출</th>
       </tr>
     </thead>
     <tbody id="result">
       <tr>
-        <td colspan="6">계산 결과가 여기에 표시됩니다.</td>
+        <td colspan="5">계산 결과가 여기에 표시됩니다.</td>
       </tr>
     </tbody>
   </table>
 
   <div class="note">
-    ※ 750size 로스율 8% / 1200size 로스율 12% / 1300size 로스율 12% 적용<br>
-    ※ 최종 예상장수는 전체 시공면적 ÷ 매트 1장 면적 × 로스율 기준으로 계산됩니다.<br>
+    ※ 최종 예상장수는 전체 시공면적 ÷ 매트 1장 면적 기준으로 계산됩니다.<br>
     ※ 소수점 장수는 요청 기준에 따라 내림 처리됩니다. 예: 75.8장 → 75장<br>
     ※ 실제 현장 구조, 기둥, 몰딩, 재단 방향, 자투리 재사용 여부에 따라 최종 수량은 달라질 수 있습니다.
   </div>
@@ -348,7 +344,7 @@ function resetAll() {
   `;
 
   document.getElementById("summary").innerHTML = "공간을 입력한 뒤 계산하기를 눌러주세요.";
-  document.getElementById("result").innerHTML = `<tr><td colspan="6">계산 결과가 여기에 표시됩니다.</td></tr>`;
+  document.getElementById("result").innerHTML = `<tr><td colspan="5">계산 결과가 여기에 표시됩니다.</td></tr>`;
 }
 
 function getSpaceData() {
@@ -425,7 +421,6 @@ function calculate() {
         <td><strong>${mat.name}</strong></td>
         <td>${totalArea.toLocaleString()}㎟</td>
         <td>${areaBaseCount}장<br><small>(${rawAreaCount.toFixed(1)}장 내림)</small></td>
-        <td>${mat.lossRate * 100}%</td>
         <td><strong>${finalCount}장</strong><br><small>(${finalRawCount.toFixed(1)}장 내림)</small></td>
         <td>
           <button class="detail-btn" onclick="toggleDetail('${detailId}')">상세보기</button>
