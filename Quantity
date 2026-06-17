@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>르셀란 예상장수 계산기</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f5f5f5;padding:30px}
+.box{max-width:1100px;margin:auto;background:#fff;padding:25px;border-radius:15px}
+input{padding:10px;margin:5px;width:150px}
+button{padding:10px 18px;margin:5px;border:0;border-radius:8px;background:#222;color:#fff;cursor:pointer}
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th,td{border:1px solid #ddd;padding:11px;text-align:center}
+th{background:#222;color:#fff}
+.note{font-size:14px;color:#666;line-height:1.6;margin-top:15px}
+.delete{background:#999}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>르셀란 750 / 1200 / 1300 예상장수 계산기</h2>
+
+<div id="spaces">
+  <div class="space">
+    공간명 <input type="text" class="name" value="거실">
+    가로(mm) <input type="number" class="width" value="3600">
+    세로(mm) <input type="number" class="height" value="3600">
+    <button class="delete" onclick="deleteSpace(this)">삭제</button>
+  </div>
+</div>
+
+<button onclick="addSpace()">공간 추가</button>
+<button onclick="calculate()">계산하기</button>
+
+<table>
+<thead>
+<tr>
+<th>사이즈</th>
+<th>전체 시공면적</th>
+<th>단순 면적기준 장수</th>
+<th>로스율</th>
+<th>로스 반영 예상장수</th>
+<th>공간별 단순 산출</th>
+<th>최종 추천장수</th>
+</tr>
+</thead>
+<tbody id="result">
+<tr><td colspan="7">공간 치수를 입력 후 계산하기를 눌러주세요.</td></tr>
+</tbody>
+</table>
+
+<div class="note">
+※ 750size 로스율 8% / 1200size 로스율 12% / 1300size 로스율 12% 적용<br>
+※ 여러 공간을 함께 시공할 경우, 자투리 재사용 가능성을 고려해 “전체면적 기준 장수”와 “공간별 산출 장수”를 함께 비교합니다.<br>
+※ 최종 추천장수는 실무 견적용 예상값이며, 실제 현장 구조·기둥·몰딩·재단방향에 따라 달라질 수 있습니다.
+</div>
+</div>
+
+<script>
+const matSizes = [
+  {name:"750size", size:750, loss:0.08},
+  {name:"1200size", size:1200, loss:0.12},
+  {name:"1300size", size:1300, loss:0.12}
+];
+
+function addSpace(){
+  const div = document.createElement("div");
+  div.className = "space";
+  div.innerHTML = `
+    공간명 <input type="text" class="name" placeholder="예: 주방">
+    가로(mm) <input type="number" class="width" placeholder="예: 3300">
+    세로(mm) <input type="number" class="height" placeholder="예: 3000">
+    <button class="delete" onclick="deleteSpace(this)">삭제</button>
+  `;
+  document.getElementById("spaces").appendChild(div);
+}
+
+function deleteSpace(btn){
+  btn.parentElement.remove();
+}
+
+function calculate(){
+  const spaces = document.querySelectorAll(".space");
+  let spaceData = [];
+  let totalArea = 0;
+
+  spaces.forEach(space=>{
+    const name = space.querySelector(".name").value || "공간";
+    const width = Number(space.querySelector(".width").value);
+    const height = Number(space.querySelector(".height").value);
+
+    if(width > 0 && height > 0){
+      const area = width * height;
+      totalArea += area;
+      spaceData.push({name,width,height,area});
+    }
+  });
+
+  if(spaceData.length === 0){
+    alert("공간 치수를 입력해주세요.");
+    return;
+  }
+
+  let html = "";
+
+  matSizes.forEach(mat=>{
+    const matArea = mat.size * mat.size;
+
+    // 전체 면적을 기준으로 계산
+    const areaBaseCount = Math.ceil(totalArea / matArea);
+
+    // 로스율 반영 계산
+    const lossCount = Math.ceil(areaBaseCount * (1 + mat.loss));
+
+    // 공간별 단순 산출 계산
+    let spaceBaseTotal = 0;
+    let detail = "";
+
+    spaceData.forEach(space=>{
+      const wCount = Math.ceil(space.width / mat.size);
+      const hCount = Math.ceil(space.height / mat.size);
+      const count = wCount * hCount;
+      spaceBaseTotal += count;
+
+      detail += `${space.name}: ${wCount}장 × ${hCount}장 = ${count}장<br>`;
+    });
+
+    /*
+      최종 추천장수 로직
+      1. 전체면적 + 로스율 기준 장수
+      2. 공간별 단순 산출 장수
+      둘 중 작은 값과 큰 값 사이에서 보수적으로 산출
+      자투리 재사용 가능성을 감안해 공간별 산출보다 조금 낮게 잡되,
+      전체면적 로스 반영 장수보다 낮아지지 않게 계산
+    */
+
+    const reuseAdjusted = Math.ceil((lossCount + spaceBaseTotal) / 2);
+    const finalCount = Math.max(lossCount, reuseAdjusted);
+
+    html += `
+      <tr>
+        <td><strong>${mat.name}</strong></td>
+        <td>${totalArea.toLocaleString()}㎟</td>
+        <td>${areaBaseCount}장</td>
+        <td>${mat.loss * 100}%</td>
+        <td>${lossCount}장</td>
+        <td>${detail}</td>
+        <td><strong>${finalCount}장</strong></td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("result").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
