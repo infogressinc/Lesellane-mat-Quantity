@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>르셀란 예상장수 계산기</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">LESELLANE ESTIMATE TOOL</p>
+        <h1>르셀란 예상장수 계산기</h1>
+        <p class="desc">
+          공간별 가로·세로 실측 치수를 입력하면 750 / 1200 / 1300size 기준 예상장수를 자동 산출합니다.
+        </p>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>시공 공간 입력</h2>
+        <span id="spaceCount">1개 공간</span>
+      </div>
+
+      <div id="spaces" class="spaces"></div>
+
+      <div class="actions">
+        <button type="button" class="btn dark" onclick="addSpace()">+ 공간 추가</button>
+        <button type="button" class="btn black" onclick="calculate()">계산하기</button>
+        <button type="button" class="btn gray" onclick="resetAll()">초기화</button>
+      </div>
+    </section>
+
+    <section class="summary" id="summary">
+      공간을 입력한 뒤 계산하기를 눌러주세요.
+    </section>
+
+    <section class="result-wrap">
+      <div class="result-table-wrap">
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th>사이즈</th>
+              <th>전체 시공면적</th>
+              <th>단순 면적기준 장수</th>
+              <th>최종 예상장수</th>
+              <th>공간별 산출</th>
+            </tr>
+          </thead>
+          <tbody id="resultTableBody">
+            <tr><td colspan="5">계산 결과가 여기에 표시됩니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="resultCards" class="result-cards">
+        <div class="empty-card">계산 결과가 여기에 표시됩니다.</div>
+      </div>
+    </section>
+
+    <section class="note">
+      <strong>계산 기준</strong><br>
+      최종 예상장수는 전체 시공면적 ÷ 매트 1장 면적 기준에 내부 보정값을 적용해 계산합니다.<br>
+      소수점 장수는 내림 처리됩니다. 예: 75.8장 → 75장<br>
+      실제 현장 구조, 기둥, 몰딩, 재단 방향, 자투리 재사용 여부에 따라 최종 수량은 달라질 수 있습니다.
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
